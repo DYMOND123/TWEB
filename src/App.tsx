@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu, Card, Input, Button } from 'antd';
+import { FirstInterface, SecondInterface } from './lsb4';
 
 const items1 = ['1', '2', '3'].map((key) => ({
   key,
@@ -19,31 +20,47 @@ const initialFormData = {
   input3: ''
 };
 
+const exampleObject1: FirstInterface = {
+  field1: 'value1',
+  field2: 42,
+  field3: true,
+  field4: ['item1', 'item2'],
+  field5: { key: 'example', value: 10 },
+};
+
+const exampleObject2: SecondInterface = {
+  field1: 'value1',
+  field2: 42,
+  field3: true,
+  field4: ['item1', 'item2'],
+  field5: { key: 'example', value: 10 },
+  additionalField1: 'extraValue1',
+  additionalField2: false,
+}
+
 function SubmenuContent() {
   const [formData, setFormData] = useState(initialFormData);
   const [submittedData, setSubmittedData] = useState<any>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
     const { value } = e.target;
-    if (field === 'input2' || field === 'input3') {
-      // Validare doar pentru litere (fără cifre)
-      const newValue = value.replace(/[0-9]/g, '');
-      setFormData({
-        ...formData,
-        [field]: newValue
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [field]: value
-      });
-    }
+    // Validare pentru cifre (doar primul input)
+    const newValue = field === 'input1' ? value.replace(/\D/g, '') : value.replace(/[0-9]/g, '');
+    setFormData({
+      ...formData,
+      [field]: newValue
+    });
   };
 
   const handleSubmit = () => {
     console.log('Datele introduse:', formData);
     setSubmittedData(formData);
     alert('Datele au fost trimise cu succes!');
+  };
+
+  const handleDelete = () => {
+    setFormData(initialFormData);
+    setSubmittedData(null);
   };
 
   return (
@@ -68,15 +85,16 @@ function SubmenuContent() {
           onChange={(e) => handleInputChange(e, 'input3')}
         />
         <Button type="primary" onClick={handleSubmit}>Trimite</Button>
+        {submittedData && (
+          <div style={{ marginTop: '20px' }}>
+            <h3>Datele introduse:</h3>
+            <p>N. Tel.: {submittedData.input1}</p>
+            <p>Nume: {submittedData.input2}</p>
+            <p>Prenume: {submittedData.input3}</p>
+            <Button onClick={handleDelete}>Șterge</Button>
+          </div>
+        )}
       </div>
-      {submittedData && (
-        <div style={{ marginTop: '20px' }}>
-          <h3>Datele introduse:</h3>
-          <p>N. Tel.: {submittedData.input1}</p>
-          <p>Nume: {submittedData.input2}</p>
-          <p>Prenume: {submittedData.input3}</p>
-        </div>
-      )}
     </Card>
   );
 }
